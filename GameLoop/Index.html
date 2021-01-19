@@ -1,0 +1,46 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Loading Images</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="HTML5 GameLoop Template">
+    <meta name="author" content="UI Programming">
+
+    <!--StyleSheet-->
+    <link rel="stylesheet" href="./css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body>
+	<table>
+        <tbody>
+            <tr>
+                <td>&nbsp;</td>
+                <td><button onclick="onClickY()" class="button yellow round">Y</button></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><button onclick="onClickX()" class="button blue round">X</button></td>
+                <td>&nbsp;</td>
+                <td><button onclick="onClickB()" class="button red round">B</button></td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td><button onclick="onClickA()" class="button green round">A</button></td>
+                <td>&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+	<canvas id="the_canvas" width="800" height="800" style="border: black 1px solid;">
+        Oops! looks like your browser does not support canvas tag
+    </canvas>
+</body>
+
+    <!--JavaScript File-->
+    <script src="./js/script.js"></script>
+
+</html>
