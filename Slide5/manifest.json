@@ -37,6 +37,6 @@
     "background_color": "#000000",
     "display": "minimal-ui",
     "orientation": "landscape",
-    "scope": "./",
+    "scope": "/",
     "start_url": "/index.html"
 }
