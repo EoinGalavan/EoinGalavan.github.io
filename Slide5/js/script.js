@@ -6,6 +6,17 @@ function onPageLoad() {
   
 			 }
 
+function turnLock() {
+	savedBoardArray[lastSquare[0].index][lastSquare[1].index].color 
+	= boardArray[lastSquare[0].index][lastSquare[1].index].color;
+	playerRed = !playerRed;
+	if(playerRed == true) {
+		document.getElementById("HUD").innerHTML = "Red Player Place a Piece";
+	}
+	else {
+		document.getElementById("HUD").innerHTML = "Blue Player Place a Piece";
+	}
+}
 
 function buttonOnClick() {
   // alert("Booooommmmmm!!!");
@@ -25,7 +36,19 @@ function checkBoard(e){
 		if(x > (i * squareHeight) && x < (i + 1)* squareHeight &&
 		y > (j * squareWidth) && y < (j + 1)* squareWidth)
 		{
-			boardArray[i][j].color = "#FF0000";
+			if(boardArray[i][j].color == "#FFFFFF")
+			{
+				boardArray[lastSquare[0].index][lastSquare[1].index].color 
+				= savedBoardArray[lastSquare[0].index][lastSquare[1].index].color;
+				if(playerRed == true) {
+					boardArray[i][j].color = "#FF0000";
+				}
+				else{
+					boardArray[i][j].color = "#0000FF"
+				}
+				lastSquare[0].index = i;
+				lastSquare[1].index = j;
+			}
 		}
 	}
   }
@@ -75,6 +98,28 @@ var boardArray = [[{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
  { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
  { "color": "#FFFFFF"}, { "color": "#FFFFFF"}]];
  
+ var savedBoardArray = [[{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
+ [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
+ [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
+ [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
+ [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
+ [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
+ { "color": "#FFFFFF"}, { "color": "#FFFFFF"}]];
+ 
+  var lastSquare = [{index: "0"},{index: "0"}];
+  
+  var playerRed = true;
 
 
 drawBoard();
