@@ -205,7 +205,7 @@ function rightButtonOnClick() {
 	if(slidePhase) {
 		if(!slid || !vertical) {
 			var topPiece = 0;
-			var lastPiece = 0;
+			var lastPiece = boardSize;
 			var selectedRow = boardSize;
 			var slidable = false;
 			var pieceCounter = -1;
@@ -334,7 +334,7 @@ function downButtonOnClick() {
 	if(slidePhase) {
 		if(!slid || vertical) {
 			var topPiece = 0;
-			var lastPiece = 0;
+			var lastPiece = boardSize;
 			var selectedCol = boardSize;
 			var slidable = false;
 			var pieceCounter = -1;
