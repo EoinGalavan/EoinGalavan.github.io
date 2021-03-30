@@ -7,21 +7,43 @@ function onPageLoad() {
 			 }
 
 function turnLock() {
-	savedBoardArray[lastSquare[0].index][lastSquare[1].index].color 
-	= boardArray[lastSquare[0].index][lastSquare[1].index].color;
-	playerRed = !playerRed;
-	if(playerRed == true) {
-		document.getElementById("HUD").innerHTML = "Red Player Place a Piece";
+	if(!slidePhase)
+	{
+		savedBoardArray[lastSquare[0].index][lastSquare[1].index].color 
+		= boardArray[lastSquare[0].index][lastSquare[1].index].color;
+		if(playerRed == true) {
+			document.getElementById("HUD").innerHTML = "Red Player Slide Piece(s)";
+		}
+		else {
+			document.getElementById("HUD").innerHTML = "Blue Player Slide Piece(s)";
+		}
 	}
-	else {
-		document.getElementById("HUD").innerHTML = "Blue Player Place a Piece";
+	else{
+		playerRed = !playerRed;
+		slid = false;
+		if(playerRed == true) {
+			document.getElementById("HUD").innerHTML = "Red Player Place a Piece";
+		}
+		else {
+			document.getElementById("HUD").innerHTML = "Blue Player Place a Piece";
+		}
+		for(i = 0; i < boardSize; i++)
+	    {
+		  for(j = 0; j < boardSize; j++)
+		  {
+			  boardArray[i][j].selected = false;
+			  savedBoardArray[i][j].color = boardArray[i][j].color;
+		  }
+	    }
 	}
+	slidePhase = !slidePhase;
 	if(victoryCheck("#FF0000")) {
 		document.getElementById("HUD").innerHTML = "Red Player wins";
 	}
 	if(victoryCheck("#0000FF")) {
 		document.getElementById("HUD").innerHTML = "Blue Player wins";
-	}
+	}	
+	drawBoard();
 }
 
 function victoryCheck(color) {
@@ -114,10 +136,265 @@ function checkDiagonalLeft(color, i, j) {
 	return false;
 }
 
-function buttonOnClick() {
-  // alert("Booooommmmmm!!!");
-  console.log("Button Pressed");
+function leftButtonOnClick() {
+	if(slidePhase) {
+		if(!slid || !vertical) {
+			var topPiece = 0;
+			var lastPiece = 0;
+			var selectedRow = boardSize;
+			var slidable = false;
+			var pieceCounter = -1;
+			for(i = 0; i < boardSize; i++)
+			{
+			  for(j = 0; j < boardSize; j++)
+			  {
+				  if(boardArray[i][j].selected) {
+					  if(boardArray[i][j].color != "#FFFFFF") {
+						  if(selectedRow == boardSize) {
+							  selectedRow = j;
+							  topPiece = i;
+							  lastPiece = i;
+							  slidable = true;
+							  pieceCounter++;
+						  }
+						  else if(selectedRow == j) {
+							  lastPiece = i;
+							  pieceCounter++;
+						  }
+						  else {  
+							  slidable = false;
+						  }
+					  }
+					  else {
+						  slidable = false;
+						  selectedRow = boardSize + 1;
+					  }
+				}
+				  
+			  }
+			}
+			if(topPiece > 0) {
+				if(boardArray[topPiece-1][selectedRow].color != "#FFFFFF") {
+					slidable = false;
+				}
+			}
+			else {
+				slidable = false;
+			}
+			if(pieceCounter < (lastPiece - topPiece)) {
+				slidable = false;
+			}
+			if(slidable) {
+				for(i = 1; i < boardSize; i++) {
+					if(boardArray[i][selectedRow].selected) {
+						boardArray[i-1][selectedRow].color = boardArray[i][selectedRow].color;
+						boardArray[i][selectedRow].color = "#FFFFFF";
+						boardArray[i-1][selectedRow].selected = boardArray[i][selectedRow].selected;
+						boardArray[i][selectedRow].selected = false;
+					}
+				}
+				slid = true;
+				vertical = false;
+				drawBoard();
+			}
+		}
+	}
 }
+
+function rightButtonOnClick() {
+	if(slidePhase) {
+		if(!slid || !vertical) {
+			var topPiece = 0;
+			var lastPiece = 0;
+			var selectedRow = boardSize;
+			var slidable = false;
+			var pieceCounter = -1;
+			for(i = 0; i < boardSize; i++)
+			{
+			  for(j = 0; j < boardSize; j++)
+			  {
+				  if(boardArray[i][j].selected) {
+					  if(boardArray[i][j].color != "#FFFFFF") {
+						  if(selectedRow == boardSize) {
+							  selectedRow = j;
+							  topPiece = i;
+							  lastPiece = i;
+							  slidable = true;
+							  pieceCounter++;
+						  }
+						  else if(selectedRow == j) {
+							  lastPiece = i;
+							  pieceCounter++;
+						  }
+						  else {
+							  slidable = false;
+						  }
+					  }
+					  else {
+						  slidable = false;
+						  selectedRow = boardSize + 1;
+					  }
+				  }
+			  }
+			}
+			if(lastPiece < boardSize - 1) {
+				if(boardArray[lastPiece+1][selectedRow].color != "#FFFFFF") {
+					slidable = false;
+				}
+			}
+			else {
+				slidable = false;
+			}
+			if(pieceCounter < (lastPiece - topPiece)) {
+				slidable = false;
+			}
+			if(slidable) {
+				for(i = boardSize - 2; i >= 0; i--) {
+					if(boardArray[i][selectedRow].selected) {
+						boardArray[i+1][selectedRow].color = boardArray[i][selectedRow].color;
+						boardArray[i][selectedRow].color = "#FFFFFF";
+						boardArray[i+1][selectedRow].selected = boardArray[i][selectedRow].selected;
+						boardArray[i][selectedRow].selected = false;
+					}
+				}
+				slid = true;
+				vertical = false;
+				drawBoard();
+			}
+		}
+	}
+}
+
+function upButtonOnClick() {
+	if(slidePhase) {
+		if(!slid || vertical) {
+			var topPiece = 0;
+			var lastPiece = 0;
+			var selectedCol = boardSize;
+			var slidable = false;
+			var pieceCounter = -1;
+			for(i = 0; i < boardSize; i++)
+			{
+			  for(j = 0; j < boardSize; j++)
+			  {
+				  if(boardArray[i][j].selected) {
+					  if(boardArray[i][j].color != "#FFFFFF") {
+						  if(selectedCol == boardSize) {
+							  selectedCol = i;
+							  topPiece = j;
+							  lastPiece = j;
+							  slidable = true;
+							  pieceCounter++;
+						  }
+						  else if(selectedCol == i) {
+							  lastPiece = j;
+							  pieceCounter++;
+						  }
+						  else {  
+							  slidable = false;
+						  }
+					  }
+					  else {
+						  slidable = false;
+						  selectedCol = boardSize + 1;
+					  }
+				}
+				  
+			  }
+			}
+			if(topPiece > 0) {
+				if(boardArray[selectedCol][topPiece-1].color != "#FFFFFF") {
+					slidable = false;
+				}
+			}
+			else {
+				slidable = false;
+			}
+			if(pieceCounter < (lastPiece - topPiece)) {
+				slidable = false;
+			}
+			if(slidable) {
+				for(i = 1; i < boardSize; i++) {
+					if(boardArray[selectedCol][i].selected) {
+						boardArray[selectedCol][i-1].color = boardArray[selectedCol][i].color;
+						boardArray[selectedCol][i].color = "#FFFFFF";
+						boardArray[selectedCol][i-1].selected = boardArray[selectedCol][i].selected;
+						boardArray[selectedCol][i].selected = false;
+					}
+				}
+				slid = true;
+				vertical = true;
+				drawBoard();
+			}
+		}
+	}
+}
+
+function downButtonOnClick() {
+	if(slidePhase) {
+		if(!slid || vertical) {
+			var topPiece = 0;
+			var lastPiece = 0;
+			var selectedCol = boardSize;
+			var slidable = false;
+			var pieceCounter = -1;
+			for(i = 0; i < boardSize; i++)
+			{
+			  for(j = 0; j < boardSize; j++)
+			  {
+				  if(boardArray[i][j].selected) {
+					  if(boardArray[i][j].color != "#FFFFFF") {
+						  if(selectedCol == boardSize) {
+							  selectedCol = i;
+							  topPiece = j;
+							  lastPiece = j;
+							  slidable = true;
+							  pieceCounter++;
+						  }
+						  else if(selectedCol == i) {
+							  lastPiece = j;
+							  pieceCounter++;
+						  }
+						  else {
+							  slidable = false;
+						  }
+					  }
+					  else {
+						  slidable = false;
+						  selectedCol = boardSize + 1;
+					  }
+				  }
+			  }
+			}
+			if(lastPiece < boardSize - 1) {
+				if(boardArray[selectedCol][lastPiece+1].color != "#FFFFFF") {
+					slidable = false;
+				}
+			}
+			else {
+				slidable = false;
+			}
+			if(pieceCounter < (lastPiece - topPiece)) {
+				slidable = false;
+			}
+			if(slidable) {
+				for(i = boardSize - 2; i >= 0; i--) {
+					if(boardArray[selectedCol][i].selected) {
+						boardArray[selectedCol][i+1].color = boardArray[selectedCol][i].color;
+						boardArray[selectedCol][i].color = "#FFFFFF";
+						boardArray[selectedCol][i+1].selected = boardArray[selectedCol][i].selected;
+						boardArray[selectedCol][i].selected = false;
+					}
+				}
+				slid = true;
+				vertical = true;
+				drawBoard();
+			}
+			
+		}
+	}
+}
+
 
 function checkBoard(e){
   var rect = canvas.getBoundingClientRect();
@@ -132,23 +409,39 @@ function checkBoard(e){
 		if(x > (i * squareHeight) && x < (i + 1)* squareHeight &&
 		y > (j * squareWidth) && y < (j + 1)* squareWidth)
 		{
-			if(boardArray[i][j].color == "#FFFFFF")
-			{
-				boardArray[lastSquare[0].index][lastSquare[1].index].color 
-				= savedBoardArray[lastSquare[0].index][lastSquare[1].index].color;
-				if(playerRed == true) {
-					boardArray[i][j].color = boardColors[0].color;
+			if(!slidePhase) {
+				if(boardArray[i][j].color == "#FFFFFF")
+				{
+					boardArray[lastSquare[0].index][lastSquare[1].index].color 
+					= savedBoardArray[lastSquare[0].index][lastSquare[1].index].color;
+					if(playerRed == true) {
+						boardArray[i][j].color = boardColors[0].color;
+					}
+					else{
+						boardArray[i][j].color = boardColors[1].color;
+					}
+					lastSquare[0].index = i;
+					lastSquare[1].index = j;
 				}
-				else{
-					boardArray[i][j].color = boardColors[1].color;
-				}
-				lastSquare[0].index = i;
-				lastSquare[1].index = j;
+			}
+			else if(!slid){
+				boardArray[i][j].selected = !boardArray[i][j].selected;
 			}
 		}
 	}
   }
   drawBoard();
+}
+
+function reset() {
+	for(i = 0; i < boardSize; i++) {
+		for(j = 0; j < boardSize; j++){
+		  boardArray[i][j].selected = false;
+		  boardArray[i][j].color = savedBoardArray[i][j].color;
+		}
+	}
+	slid = false;
+	drawBoard();
 }
 
 // Draw a HealthBar on Canvas, can be used to indicate players health
@@ -161,7 +454,16 @@ function drawBoard() {
 	{
 		context.beginPath();
 		context.fillStyle = boardArray[i][j].color;
-		context.rect(i * canvas.width/boardSize, j * canvas.height/boardSize, canvas.width/boardSize, canvas.height/boardSize);
+		if(slidePhase && boardArray[i][j].selected){
+			context.lineWidth = 3;
+			context.rect(i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
+				canvas.width/boardSize - 2, canvas.height/boardSize - 2);
+		}
+		else {
+			context.lineWidth = 1;
+			context.rect(i * canvas.width/boardSize, j * canvas.height/boardSize, 
+				canvas.width/boardSize, canvas.height/boardSize);
+		}
 		context.fill();
 		context.stroke();
 	}
@@ -175,24 +477,42 @@ var boardColors = [{
     "color": "#0000FF"
   }
 ];
-var boardArray = [[{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}]];
+var boardArray = [[{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false}],
+[{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false}],
+[{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false}],
+ [{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false}],
+ [{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false}],
+[{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false},
+{ "color": "#FFFFFF", "selected": false}, 
+{ "color": "#FFFFFF", "selected": false}]];
  
 var savedBoardArray = [[{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
  { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
@@ -216,6 +536,9 @@ var savedBoardArray = [[{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
 var lastSquare = [{index: "0"},{index: "0"}];
   
 var playerRed = true;
+var slidePhase = false;
+var slid = false;
+var vertical = false;
 
 var boardSize = 6;
 
