@@ -6,6 +6,21 @@ function onPageLoad() {
   
 			 }
 
+// Total Frames
+var frames = 8;
+var rows = 2;
+
+// Current Frame
+var currentFrame = 0;
+var currentRow = 0;
+
+// red Sprite
+var redSprite = new Image();
+redSprite.src = "img/sprites/redanims.png";
+// blue Sprite
+var blueSprite = new Image();
+blueSprite.src = "img/sprites/blueanims.png";
+
 function turnLock() {
 	if(!slidePhase)
 	{
@@ -37,13 +52,12 @@ function turnLock() {
 	    }
 	}
 	slidePhase = !slidePhase;
-	if(victoryCheck("#FF0000")) {
+	if(victoryCheck(0)) {
 		document.getElementById("HUD").innerHTML = "Red Player wins";
 	}
-	if(victoryCheck("#0000FF")) {
+	if(victoryCheck(1)) {
 		document.getElementById("HUD").innerHTML = "Blue Player wins";
 	}	
-	drawBoard();
 }
 
 function victoryCheck(color) {
@@ -75,7 +89,7 @@ function checkHorizontal(color, row) {
 	var counter = 0;
 	for(i = 0; i < boardSize; i++)
 	{
-		if(savedBoardArray[i][row].color == color)
+		if(savedBoardArray[i][row].color == boardColors[color].color)
 		{
 			counter++;
 			lastSquare = true;
@@ -97,7 +111,7 @@ function checkVertical(color, col) {
 	var counter = 0;
 	for(i = 0; i < boardSize; i++)
 	{
-		if(savedBoardArray[col][i].color == color)
+		if(savedBoardArray[col][i].color == boardColors[color].color)
 		{
 			counter++;
 			lastSquare = true;
@@ -115,22 +129,22 @@ function checkVertical(color, col) {
 }
 
 function checkDiagonalRight(color, i, j) {
-	if(savedBoardArray[i][j].color == color &&
-		savedBoardArray[i+1][j+1].color == color &&
-		savedBoardArray[i+2][j+2].color == color &&
-		savedBoardArray[i+3][j+3].color == color &&
-		savedBoardArray[i+4][j+4].color == color) {
+	if(savedBoardArray[i][j].color == boardColors[color].color &&
+		savedBoardArray[i+1][j+1].color == boardColors[color].color &&
+		savedBoardArray[i+2][j+2].color == boardColors[color].color &&
+		savedBoardArray[i+3][j+3].color == boardColors[color].color &&
+		savedBoardArray[i+4][j+4].color == boardColors[color].color) {
 		return true;
 	}
 	return false;
 }
 
 function checkDiagonalLeft(color, i, j) {
-	if(savedBoardArray[i][j].color == color &&
-		savedBoardArray[i+1][j-1].color == color &&
-		savedBoardArray[i+2][j-2].color == color &&
-		savedBoardArray[i+3][j-3].color == color &&
-		savedBoardArray[i+4][j-4].color == color) {
+	if(savedBoardArray[i][j].color == boardColors[color].color &&
+		savedBoardArray[i+1][j-1].color == boardColors[color].color &&
+		savedBoardArray[i+2][j-2].color == boardColors[color].color &&
+		savedBoardArray[i+3][j-3].color == boardColors[color].color &&
+		savedBoardArray[i+4][j-4].color == boardColors[color].color) {
 		return true;
 	}
 	return false;
@@ -195,7 +209,6 @@ function leftButtonOnClick() {
 				}
 				slid = true;
 				vertical = false;
-				drawBoard();
 			}
 		}
 	}
@@ -259,7 +272,6 @@ function rightButtonOnClick() {
 				}
 				slid = true;
 				vertical = false;
-				drawBoard();
 			}
 		}
 	}
@@ -324,7 +336,6 @@ function upButtonOnClick() {
 				}
 				slid = true;
 				vertical = true;
-				drawBoard();
 			}
 		}
 	}
@@ -388,7 +399,6 @@ function downButtonOnClick() {
 				}
 				slid = true;
 				vertical = true;
-				drawBoard();
 			}
 			
 		}
@@ -430,7 +440,6 @@ function checkBoard(e){
 		}
 	}
   }
-  drawBoard();
 }
 
 function reset() {
@@ -441,19 +450,28 @@ function reset() {
 		}
 	}
 	slid = false;
-	drawBoard();
 }
 
 // Draw a HealthBar on Canvas, can be used to indicate players health
 function drawBoard() {
   // Draw the background
   context.clearRect(0, 0, canvas.width, canvas.height);
+  currentFrame++;
+  if(currentFrame >= frames)
+  {
+	  currentFrame = 0;
+	  currentRow++;
+	  if(currentRow >= rows)
+	  {
+		  currentRow = 0;
+	  }
+  }
   for(i = 0; i < boardSize; i++)
   {
 	  for(j = 0; j < boardSize; j++)
 	{
 		context.beginPath();
-		context.fillStyle = boardArray[i][j].color;
+		context.fillStyle = "#FFFFFF";
 		if(slidePhase && boardArray[i][j].selected){
 			context.lineWidth = 3;
 			context.rect(i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
@@ -466,8 +484,23 @@ function drawBoard() {
 		}
 		context.fill();
 		context.stroke();
+		if(boardArray[i][j].color == boardColors[0].color)
+		{
+			context.drawImage(redSprite, (redSprite.width / 8) * currentFrame, 
+				(redSprite.height / 4) * currentRow, 53, 60, 
+				i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
+				canvas.width/boardSize - 2, canvas.height/boardSize - 2);
+		}
+		else if(boardArray[i][j].color == boardColors[1].color)
+		{
+			context.drawImage(blueSprite, (blueSprite.width / 8) * currentFrame, 
+				(blueSprite.height / 4) * currentRow, 53, 60, 
+				i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
+				canvas.width/boardSize - 2, canvas.height/boardSize - 2);
+		}
 	}
   }
+  window.requestAnimationFrame(drawBoard);
 }
 
 var boardColors = [{
@@ -543,4 +576,4 @@ var vertical = false;
 var boardSize = 6;
 
 
-drawBoard();
+window.requestAnimationFrame(drawBoard);
