@@ -2,9 +2,13 @@ var canvas = document.getElementById('game')
 var context = canvas.getContext('2d');
 
 function onPageLoad() {
-  console.log("Page Loaded");
-  
+		let url = new URL(document.location.href);
+		player1 = url.searchParams.get("player1_color");
+		player2 = url.searchParams.get("player2_color");
 			 }
+
+var player1 = 1;
+var player2 = 2;
 
 // Total Frames
 var frames = 8;
@@ -20,6 +24,15 @@ redSprite.src = "img/sprites/redanims.png";
 // blue Sprite
 var blueSprite = new Image();
 blueSprite.src = "img/sprites/blueanims.png";
+// red Sprite
+var greenSprite = new Image();
+greenSprite.src = "img/sprites/greenanims.png";
+// blue Sprite
+var orangeSprite = new Image();
+orangeSprite.src = "img/sprites/orangeanims.png";
+// red Sprite
+var purpleSprite = new Image();
+purpleSprite.src = "img/sprites/purpleanims.png";
 
 function turnLock() {
 	if(!slidePhase)
@@ -27,20 +40,20 @@ function turnLock() {
 		savedBoardArray[lastSquare[0].index][lastSquare[1].index].color 
 		= boardArray[lastSquare[0].index][lastSquare[1].index].color;
 		if(playerRed == true) {
-			document.getElementById("HUD").innerHTML = "Red Player Slide Piece(s)";
+			document.getElementById("HUD").innerHTML = "Player 1 Slide Piece(s)";
 		}
 		else {
-			document.getElementById("HUD").innerHTML = "Blue Player Slide Piece(s)";
+			document.getElementById("HUD").innerHTML = "Player 2 Slide Piece(s)";
 		}
 	}
 	else{
 		playerRed = !playerRed;
 		slid = false;
 		if(playerRed == true) {
-			document.getElementById("HUD").innerHTML = "Red Player Place a Piece";
+			document.getElementById("HUD").innerHTML = "Player 1 Place a Piece";
 		}
 		else {
-			document.getElementById("HUD").innerHTML = "Blue Player Place a Piece";
+			document.getElementById("HUD").innerHTML = "Player 2 Place a Piece";
 		}
 		for(i = 0; i < boardSize; i++)
 	    {
@@ -52,11 +65,14 @@ function turnLock() {
 	    }
 	}
 	slidePhase = !slidePhase;
-	if(victoryCheck(0)) {
-		document.getElementById("HUD").innerHTML = "Red Player wins";
+	if(victoryCheck(player1)) {
+		document.getElementById("HUD").innerHTML = "Player 1 wins";
 	}
-	if(victoryCheck(1)) {
-		document.getElementById("HUD").innerHTML = "Blue Player wins";
+	if(victoryCheck(player2)) {
+		document.getElementById("HUD").innerHTML = "Player 2 wins";
+	}	
+	if(player1 == player2) {
+		document.getElementById("HUD").innerHTML = "Both players are using the same color";
 	}	
 }
 
@@ -89,7 +105,7 @@ function checkHorizontal(color, row) {
 	var counter = 0;
 	for(i = 0; i < boardSize; i++)
 	{
-		if(savedBoardArray[i][row].color == boardColors[color].color)
+		if(savedBoardArray[i][row].color == color)
 		{
 			counter++;
 			lastSquare = true;
@@ -111,7 +127,7 @@ function checkVertical(color, col) {
 	var counter = 0;
 	for(i = 0; i < boardSize; i++)
 	{
-		if(savedBoardArray[col][i].color == boardColors[color].color)
+		if(savedBoardArray[col][i].color == color)
 		{
 			counter++;
 			lastSquare = true;
@@ -129,22 +145,22 @@ function checkVertical(color, col) {
 }
 
 function checkDiagonalRight(color, i, j) {
-	if(savedBoardArray[i][j].color == boardColors[color].color &&
-		savedBoardArray[i+1][j+1].color == boardColors[color].color &&
-		savedBoardArray[i+2][j+2].color == boardColors[color].color &&
-		savedBoardArray[i+3][j+3].color == boardColors[color].color &&
-		savedBoardArray[i+4][j+4].color == boardColors[color].color) {
+	if(savedBoardArray[i][j].color == color &&
+		savedBoardArray[i+1][j+1].color == color &&
+		savedBoardArray[i+2][j+2].color == color &&
+		savedBoardArray[i+3][j+3].color == color &&
+		savedBoardArray[i+4][j+4].color == color) {
 		return true;
 	}
 	return false;
 }
 
 function checkDiagonalLeft(color, i, j) {
-	if(savedBoardArray[i][j].color == boardColors[color].color &&
-		savedBoardArray[i+1][j-1].color == boardColors[color].color &&
-		savedBoardArray[i+2][j-2].color == boardColors[color].color &&
-		savedBoardArray[i+3][j-3].color == boardColors[color].color &&
-		savedBoardArray[i+4][j-4].color == boardColors[color].color) {
+	if(savedBoardArray[i][j].color == color &&
+		savedBoardArray[i+1][j-1].color == color &&
+		savedBoardArray[i+2][j-2].color == color &&
+		savedBoardArray[i+3][j-3].color == color &&
+		savedBoardArray[i+4][j-4].color == color) {
 		return true;
 	}
 	return false;
@@ -163,7 +179,7 @@ function leftButtonOnClick() {
 			  for(j = 0; j < boardSize; j++)
 			  {
 				  if(boardArray[i][j].selected) {
-					  if(boardArray[i][j].color != "#FFFFFF") {
+					  if(boardArray[i][j].color != "0") {
 						  if(selectedRow == boardSize) {
 							  selectedRow = j;
 							  topPiece = i;
@@ -188,7 +204,7 @@ function leftButtonOnClick() {
 			  }
 			}
 			if(topPiece > 0) {
-				if(boardArray[topPiece-1][selectedRow].color != "#FFFFFF") {
+				if(boardArray[topPiece-1][selectedRow].color != "0") {
 					slidable = false;
 				}
 			}
@@ -202,7 +218,7 @@ function leftButtonOnClick() {
 				for(i = 1; i < boardSize; i++) {
 					if(boardArray[i][selectedRow].selected) {
 						boardArray[i-1][selectedRow].color = boardArray[i][selectedRow].color;
-						boardArray[i][selectedRow].color = "#FFFFFF";
+						boardArray[i][selectedRow].color = "0";
 						boardArray[i-1][selectedRow].selected = boardArray[i][selectedRow].selected;
 						boardArray[i][selectedRow].selected = false;
 					}
@@ -227,7 +243,7 @@ function rightButtonOnClick() {
 			  for(j = 0; j < boardSize; j++)
 			  {
 				  if(boardArray[i][j].selected) {
-					  if(boardArray[i][j].color != "#FFFFFF") {
+					  if(boardArray[i][j].color != "0") {
 						  if(selectedRow == boardSize) {
 							  selectedRow = j;
 							  topPiece = i;
@@ -251,7 +267,7 @@ function rightButtonOnClick() {
 			  }
 			}
 			if(lastPiece < boardSize - 1) {
-				if(boardArray[lastPiece+1][selectedRow].color != "#FFFFFF") {
+				if(boardArray[lastPiece+1][selectedRow].color != "0") {
 					slidable = false;
 				}
 			}
@@ -265,7 +281,7 @@ function rightButtonOnClick() {
 				for(i = boardSize - 2; i >= 0; i--) {
 					if(boardArray[i][selectedRow].selected) {
 						boardArray[i+1][selectedRow].color = boardArray[i][selectedRow].color;
-						boardArray[i][selectedRow].color = "#FFFFFF";
+						boardArray[i][selectedRow].color = "0";
 						boardArray[i+1][selectedRow].selected = boardArray[i][selectedRow].selected;
 						boardArray[i][selectedRow].selected = false;
 					}
@@ -290,7 +306,7 @@ function upButtonOnClick() {
 			  for(j = 0; j < boardSize; j++)
 			  {
 				  if(boardArray[i][j].selected) {
-					  if(boardArray[i][j].color != "#FFFFFF") {
+					  if(boardArray[i][j].color != "0") {
 						  if(selectedCol == boardSize) {
 							  selectedCol = i;
 							  topPiece = j;
@@ -315,7 +331,7 @@ function upButtonOnClick() {
 			  }
 			}
 			if(topPiece > 0) {
-				if(boardArray[selectedCol][topPiece-1].color != "#FFFFFF") {
+				if(boardArray[selectedCol][topPiece-1].color != "0") {
 					slidable = false;
 				}
 			}
@@ -329,7 +345,7 @@ function upButtonOnClick() {
 				for(i = 1; i < boardSize; i++) {
 					if(boardArray[selectedCol][i].selected) {
 						boardArray[selectedCol][i-1].color = boardArray[selectedCol][i].color;
-						boardArray[selectedCol][i].color = "#FFFFFF";
+						boardArray[selectedCol][i].color = "0";
 						boardArray[selectedCol][i-1].selected = boardArray[selectedCol][i].selected;
 						boardArray[selectedCol][i].selected = false;
 					}
@@ -354,7 +370,7 @@ function downButtonOnClick() {
 			  for(j = 0; j < boardSize; j++)
 			  {
 				  if(boardArray[i][j].selected) {
-					  if(boardArray[i][j].color != "#FFFFFF") {
+					  if(boardArray[i][j].color != "0") {
 						  if(selectedCol == boardSize) {
 							  selectedCol = i;
 							  topPiece = j;
@@ -378,7 +394,7 @@ function downButtonOnClick() {
 			  }
 			}
 			if(lastPiece < boardSize - 1) {
-				if(boardArray[selectedCol][lastPiece+1].color != "#FFFFFF") {
+				if(boardArray[selectedCol][lastPiece+1].color != "0") {
 					slidable = false;
 				}
 			}
@@ -392,7 +408,7 @@ function downButtonOnClick() {
 				for(i = boardSize - 2; i >= 0; i--) {
 					if(boardArray[selectedCol][i].selected) {
 						boardArray[selectedCol][i+1].color = boardArray[selectedCol][i].color;
-						boardArray[selectedCol][i].color = "#FFFFFF";
+						boardArray[selectedCol][i].color = "0";
 						boardArray[selectedCol][i+1].selected = boardArray[selectedCol][i].selected;
 						boardArray[selectedCol][i].selected = false;
 					}
@@ -420,15 +436,15 @@ function checkBoard(e){
 		y > (j * squareWidth) && y < (j + 1)* squareWidth)
 		{
 			if(!slidePhase) {
-				if(boardArray[i][j].color == "#FFFFFF")
+				if(boardArray[i][j].color == "0")
 				{
 					boardArray[lastSquare[0].index][lastSquare[1].index].color 
 					= savedBoardArray[lastSquare[0].index][lastSquare[1].index].color;
 					if(playerRed == true) {
-						boardArray[i][j].color = boardColors[0].color;
+						boardArray[i][j].color = player1;
 					}
 					else{
-						boardArray[i][j].color = boardColors[1].color;
+						boardArray[i][j].color = player2;
 					}
 					lastSquare[0].index = i;
 					lastSquare[1].index = j;
@@ -452,7 +468,6 @@ function reset() {
 	slid = false;
 }
 
-// Draw a HealthBar on Canvas, can be used to indicate players health
 function drawBoard() {
   // Draw the background
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -484,87 +499,102 @@ function drawBoard() {
 		}
 		context.fill();
 		context.stroke();
-		if(boardArray[i][j].color == boardColors[0].color)
+		var temp = boardArray[i][j].color;
+		if(temp == 1)
 		{
 			context.drawImage(redSprite, (redSprite.width / 8) * currentFrame, 
-				(redSprite.height / 4) * currentRow, 53, 60, 
-				i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
-				canvas.width/boardSize - 2, canvas.height/boardSize - 2);
+			(redSprite.height / 4) * currentRow, 53, 60, 
+			i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
+			canvas.width/boardSize - 2, canvas.height/boardSize - 2);
 		}
-		else if(boardArray[i][j].color == boardColors[1].color)
+		else if(temp == 2)
 		{
 			context.drawImage(blueSprite, (blueSprite.width / 8) * currentFrame, 
-				(blueSprite.height / 4) * currentRow, 53, 60, 
-				i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
-				canvas.width/boardSize - 2, canvas.height/boardSize - 2);
+			(blueSprite.height / 4) * currentRow, 53, 60, 
+			i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
+			canvas.width/boardSize - 2, canvas.height/boardSize - 2);
+		}
+		else if(temp == 3)
+		{
+			context.drawImage(greenSprite, (greenSprite.width / 8) * currentFrame, 
+			(greenSprite.height / 4) * currentRow, 53, 60, 
+			i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
+			canvas.width/boardSize - 2, canvas.height/boardSize - 2);
+		}
+		else if(temp == 4)
+		{
+			context.drawImage(orangeSprite, (orangeSprite.width / 8) * currentFrame, 
+			(orangeSprite.height / 4) * currentRow, 53, 60, 
+			i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
+			canvas.width/boardSize - 2, canvas.height/boardSize - 2);
+		}
+		else if(temp == 5)
+		{
+			context.drawImage(purpleSprite, (purpleSprite.width / 8) * currentFrame, 
+			(purpleSprite.height / 4) * currentRow, 53, 60, 
+			i * canvas.width/boardSize + 1, j * canvas.height/boardSize + 1, 
+			canvas.width/boardSize - 2, canvas.height/boardSize - 2);
 		}
 	}
   }
   window.requestAnimationFrame(drawBoard);
 }
 
-var boardColors = [{
-	"color": "#FF0000"
-  },
-  {
-    "color": "#0000FF"
-  }
-];
-var boardArray = [[{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false}],
-[{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false}],
-[{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false}],
- [{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false}],
- [{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false}],
-[{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false},
-{ "color": "#FFFFFF", "selected": false}, 
-{ "color": "#FFFFFF", "selected": false}]];
+var boardArray = [[{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false}],
+[{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false}],
+[{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false}],
+ [{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false}],
+ [{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false}],
+[{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false},
+{ "color": "0", "selected": false}, 
+{ "color": "0", "selected": false}]];
  
-var savedBoardArray = [[{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}],
- [{ "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"},
- { "color": "#FFFFFF"}, { "color": "#FFFFFF"}]];
+var savedBoardArray = [[{ "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"}],
+ [{ "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"}],
+ [{ "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"}],
+ [{ "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"}],
+ [{ "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"}],
+ [{ "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"},
+ { "color": "0"}, { "color": "0"}]];
  
 var lastSquare = [{index: "0"},{index: "0"}];
   
@@ -575,5 +605,6 @@ var vertical = false;
 
 var boardSize = 6;
 
-
+onload();
+turnLock();
 window.requestAnimationFrame(drawBoard);
