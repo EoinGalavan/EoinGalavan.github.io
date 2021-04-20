@@ -39,7 +39,7 @@ function turnLock() {
 	{
 		savedBoardArray[lastSquare[0].index][lastSquare[1].index].color 
 		= boardArray[lastSquare[0].index][lastSquare[1].index].color;
-		if(playerRed == true) {
+		if(player1Turn == true) {
 			document.getElementById("HUD").innerHTML = "Player 1 Slide Piece(s)";
 		}
 		else {
@@ -47,9 +47,9 @@ function turnLock() {
 		}
 	}
 	else{
-		playerRed = !playerRed;
+		player1Turn = !player1Turn;
 		slid = false;
-		if(playerRed == true) {
+		if(player1Turn == true) {
 			document.getElementById("HUD").innerHTML = "Player 1 Place a Piece";
 		}
 		else {
@@ -440,7 +440,7 @@ function checkBoard(e){
 				{
 					boardArray[lastSquare[0].index][lastSquare[1].index].color 
 					= savedBoardArray[lastSquare[0].index][lastSquare[1].index].color;
-					if(playerRed == true) {
+					if(player1Turn == true) {
 						boardArray[i][j].color = player1;
 					}
 					else{
@@ -598,8 +598,8 @@ var savedBoardArray = [[{ "color": "0"}, { "color": "0"},
  
 var lastSquare = [{index: "0"},{index: "0"}];
   
-var playerRed = true;
-var slidePhase = false;
+var player1Turn = false;
+var slidePhase = true;
 var slid = false;
 var vertical = false;
 
